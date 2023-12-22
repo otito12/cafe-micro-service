@@ -1,0 +1,1 @@
+web gunicorn cuoserver.wsgi:application --log-file -
