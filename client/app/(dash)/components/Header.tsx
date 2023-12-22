@@ -2,15 +2,26 @@ import { Typography } from "@mui/material";
 import useTheme from "@mui/material/styles/useTheme";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
 import SearchBox from "./SearchBox";
 import EdgeContainer from "./EdgeContainer";
 import { useRouter } from "next/navigation";
+import { getSession, signOut } from "next-auth/react";
 
 export default function Header() {
   const theme = useTheme();
   const router = useRouter();
+  const [userSession, setUserSession] = useState<any>();
+
+  async function getUserSession() {
+    const session = await getSession();
+    setUserSession(session);
+  }
+  useEffect(() => {
+    getUserSession();
+  }, []);
+
   return (
     <Grid
       container
@@ -41,47 +52,57 @@ export default function Header() {
         </Grid>
       </Grid>
       <Grid container flex={1}>
-        <EdgeContainer>
+        {/* <EdgeContainer>
           <Grid container justifyContent={"center"}>
             <SearchBox searchText={""} setSearchText={() => {}} />
           </Grid>
-        </EdgeContainer>
+        </EdgeContainer> */}
       </Grid>
 
       <Grid item>
-        <Grid container columnSpacing={2}>
+        <Grid container columnSpacing={2} alignItems={"center"}>
+          <Typography>
+            {userSession && `Hello! ${userSession.user.name}`}
+          </Typography>
           <Grid item>
-            <Button
-              disableRipple
-              sx={{
-                textTransform: "none",
-                border: "1px solid",
-                ":hover": {
-                  background: `${theme.palette.primary.dark}10`,
-                },
-              }}
-            >
-              <Grid container alignItems={"center"}>
-                <Typography sx={{ p: 0.5, pl: 1, pr: 1 }}> Login</Typography>
+            {userSession ? (
+              <Grid item>
+                <Button
+                  disableRipple
+                  onClick={() => signOut()}
+                  sx={{
+                    textTransform: "none",
+                    border: "1px solid",
+                    ":hover": {
+                      background: `${theme.palette.primary.dark}10`,
+                    },
+                  }}
+                >
+                  <Grid container alignItems={"center"}>
+                    <Typography sx={{ p: 0.5, pl: 1, pr: 1 }}>
+                      Logout
+                    </Typography>
+                  </Grid>
+                </Button>
               </Grid>
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              disableRipple
-              sx={{
-                textTransform: "none",
-                color: "white",
-                background: theme.palette.primary.main,
-                ":hover": {
-                  background: theme.palette.primary.dark,
-                },
-              }}
-            >
-              <Grid container alignItems={"center"}>
-                <Typography sx={{ p: 0.5, pl: 1, pr: 1 }}>Sign Up</Typography>
-              </Grid>
-            </Button>
+            ) : (
+              <Button
+                onClick={() => router.push("/login")}
+                disableRipple
+                sx={{
+                  textTransform: "none",
+                  color: "white",
+                  background: theme.palette.primary.main,
+                  ":hover": {
+                    background: theme.palette.primary.dark,
+                  },
+                }}
+              >
+                <Grid container alignItems={"center"}>
+                  <Typography sx={{ p: 0.5, pl: 1, pr: 1 }}>Login</Typography>
+                </Grid>
+              </Button>
+            )}
           </Grid>
         </Grid>
       </Grid>

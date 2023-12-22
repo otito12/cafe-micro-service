@@ -17,6 +17,7 @@ import { CommentType } from "@/typings";
 import { getSession } from "next-auth/react";
 import Comment from "./components/Thread/Comment";
 import Loading from "@/app/(dash)/components/Loading";
+import { v4 as uuidv4 } from "uuid";
 
 export default function page({ params }: { params: { id: string } }) {
   const [userSession, setUserSession] = useState<any>();
@@ -52,15 +53,38 @@ export default function page({ params }: { params: { id: string } }) {
   }, []);
 
   const addComment = () => {
+    const now = new Date();
     const newComment: CommentType = {
-      comment_id: "",
+      _id: uuidv4(),
       body: reviewText,
-      user_id: "",
-      user_name: "",
-      post_date: "",
+      user_id: userSession.user.email,
+      user_name: userSession.user.name,
+      post_date: now.toISOString(),
       rating: rating,
     };
-    setAllComments((prev) => [newComment, ...prev]);
+    if (reviewText.length < 2) {
+      return;
+    }
+    fetch(
+      `${
+        process.env.NEXT_PUBLIC_API_BASE_URL + `cafe/review/?id=${params.id}`
+      }`,
+      {
+        method: "POST",
+        headers: new Headers({
+          "Content-Type": "application/json",
+        }),
+        body: JSON.stringify(newComment),
+      }
+    )
+      .then((response) => {
+        if (response.ok) {
+          setAllComments((prev) => [newComment, ...prev]);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   if (isLoading) {

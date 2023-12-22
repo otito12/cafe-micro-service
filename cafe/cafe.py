@@ -18,21 +18,3 @@ def handle_get(request):
         return Response(loads(dumps(COLLECTION.find())), status=status.HTTP_200_OK)
     else:
         return Response(loads(dumps(COLLECTION.find_one({"_id": id}))), status=status.HTTP_200_OK)
-
-
-def handle_post(request):
-    # collection_key = ""
-    # collection = db_client[db_name][collection_key]
-    # collection.insert_one()
-    return Response({"message": "successful post request"}, status=status.HTTP_200_OK)
-
-
-def handle_put(request, id):
-
-    # collection = db_client[db_name][collection_key]
-    # collection.insert_one(self.__dict__)
-    return Response({"message": "successful put request"}, status=status.HTTP_200_OK)
-
-
-def handle_delete(request, id):
-    return Response({"message": "successful delete request"}, status=status.HTTP_200_OK)

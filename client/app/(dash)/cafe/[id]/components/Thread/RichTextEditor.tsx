@@ -1,12 +1,8 @@
 "use client";
 import useTheme from "@mui/material/styles/useTheme";
-import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
-import { CommentType } from "@/typings";
 
 export default function RichTextEditor({
   reviewText,

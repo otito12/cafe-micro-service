@@ -6,5 +6,6 @@ uri = "mongodb+srv://ood2103:columbia2023@cafeservice.4r2c6be.mongodb.net/?retry
 db_client = MongoClient(uri, server_api=ServerApi('1'))
 db_name = "cafeservice"
 db_collections = {
-    "cafe": "cafe"
+    "cafe": "cafe",
+    "user": "user"
 }

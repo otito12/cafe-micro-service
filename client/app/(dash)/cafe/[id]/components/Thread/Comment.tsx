@@ -7,6 +7,7 @@ import userAvatar from "@/public/useravatar.svg";
 import useTheme from "@mui/material/styles/useTheme";
 import { CommentType } from "@/typings";
 import Rating from "@mui/material/Rating";
+import dayjs from "dayjs";
 
 export default function Comment({ comment }: { comment: CommentType }) {
   const [openReply, setOpenReply] = useState(false);
@@ -44,7 +45,7 @@ export default function Comment({ comment }: { comment: CommentType }) {
           <Rating value={comment.rating} readOnly size="small" />
           <Typography sx={{ ml: 1, mr: 1 }}> • </Typography>
           <Typography sx={{ color: "#999999" }} variant="body2">
-            2 hours ago
+            {dayjs(comment.post_date).format("D ddd YYYY, HH:mm a")}
           </Typography>
         </Grid>
       </Grid>
