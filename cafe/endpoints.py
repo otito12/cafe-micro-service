@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 
 from .auth import handle_login
 from .cafe import handle_get
-from .review import handle_post as handle_review_post
+from .review import handle_post as handle_review_post, handle_delete as handle_review_delete
 from cafemicroservice.db import db_client
 # yelp
 
@@ -24,10 +24,12 @@ def cafe(request):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST'])
+@api_view(['POST', 'PUT', 'DELETE'])
 def review(request):
     if request.method == 'POST':
         return handle_review_post(request, request.GET.get('id', None))
+    elif request.method == 'DELETE':
+        return handle_review_delete(request, request.GET.get('id', None))
 
 
 @api_view(['POST'])

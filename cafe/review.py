@@ -30,3 +30,45 @@ def handle_post(request, id):
     finally:
         producer.close()
     return Response(status=status.HTTP_200_OK)
+
+
+def handle_edit(request, id):
+    cafe = loads(dumps(COLLECTION.find_one({"_id": id})))
+    reviews = [review for review in cafe["reviews"]
+               if review["_id"] != request.data.get("review_id")]
+    if not (handle_auth(request.data["user_id"])):
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    # producer event to queue
+    try:
+        producer.send('deleted-review',
+                      json.dumps(request.data).encode('utf8'))
+        # middleware
+        new_avrg = sum([review["rating"] for review in reviews])//len(reviews)
+        newvalues = {"$set": {"reviews": reviews, "avrg_rating": new_avrg}}
+        COLLECTION.update_one({"_id": id}, newvalues)
+    except Exception as e:
+        print(f"Error producing message: {e}")
+    finally:
+        producer.close()
+    return Response(status=status.HTTP_200_OK)
+
+
+def handle_delete(request, id):
+    cafe = loads(dumps(COLLECTION.find_one({"_id": id})))
+    reviews = [review for review in cafe["reviews"]
+               if review["_id"] != request.data.get("review_id")]
+    if not (handle_auth(request.data["user_id"])):
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    # producer event to queue
+    try:
+        producer.send('deleted-review',
+                      json.dumps(request.data).encode('utf8'))
+        # middleware
+        new_avrg = sum([review["rating"] for review in reviews])//len(reviews)
+        newvalues = {"$set": {"reviews": reviews, "avrg_rating": new_avrg}}
+        COLLECTION.update_one({"_id": id}, newvalues)
+    except Exception as e:
+        print(f"Error producing message: {e}")
+    finally:
+        producer.close()
+    return Response(status=status.HTTP_200_OK)

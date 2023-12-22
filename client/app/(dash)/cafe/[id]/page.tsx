@@ -87,6 +87,32 @@ export default function page({ params }: { params: { id: string } }) {
       });
   };
 
+  const deleteComment = (comment_id: string) => {
+    fetch(
+      `${
+        process.env.NEXT_PUBLIC_API_BASE_URL + `cafe/review/?id=${params.id}`
+      }`,
+      {
+        method: "DELETE",
+        headers: new Headers({
+          "Content-Type": "application/json",
+        }),
+        body: JSON.stringify({
+          review_id: comment_id,
+          user_id: userSession.user.email,
+        }),
+      }
+    )
+      .then((response) => {
+        if (response.ok) {
+          setAllComments((prev) => prev.filter((num) => num._id != comment_id));
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   if (isLoading) {
     return <Loading />;
   }
@@ -280,7 +306,12 @@ export default function page({ params }: { params: { id: string } }) {
           <Grid container mb={4}>
             <Grid container>
               {allComments?.map((comment: CommentType, index) => (
-                <Comment key={index} comment={comment} />
+                <Comment
+                  key={index}
+                  comment={comment}
+                  editable={userSession.user.email === comment.user_id}
+                  deleteComment={deleteComment}
+                />
               ))}
             </Grid>
           </Grid>
