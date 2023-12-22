@@ -152,7 +152,7 @@ export default function page({ params }: { params: { id: string } }) {
                   }
                 />
                 <Typography>
-                  {cafe.avrg_rating} ({cafe.reviews.length} reviews)
+                  {cafe?.avrg_rating} ({cafe.reviews?.length} reviews)
                 </Typography>
               </Grid>
             </EdgeContainer>
@@ -169,7 +169,7 @@ export default function page({ params }: { params: { id: string } }) {
           </Grid>
 
           <Grid container mb={4}>
-            <CafeMenu menu={cafe.menu} />
+            <CafeMenu cafe={cafe} />
           </Grid>
 
           <Grid item xs={12} mb={4}>
@@ -279,7 +279,7 @@ export default function page({ params }: { params: { id: string } }) {
 
           <Grid container mb={4}>
             <Grid container>
-              {allComments.map((comment: CommentType, index) => (
+              {allComments?.map((comment: CommentType, index) => (
                 <Comment key={index} comment={comment} />
               ))}
             </Grid>

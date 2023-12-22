@@ -3,6 +3,7 @@ from rest_framework import status
 from cafemicroservice.db import db_client, db_name, db_collections
 from bson.json_util import dumps
 from bson.json_util import loads
+import requests
 
 SERVICE_NAME = "cafe"
 COLLECTION_KEY = db_collections[SERVICE_NAME]
@@ -17,4 +18,12 @@ def handle_get(request):
     if not id:
         return Response(loads(dumps(COLLECTION.find())), status=status.HTTP_200_OK)
     else:
-        return Response(loads(dumps(COLLECTION.find_one({"_id": id}))), status=status.HTTP_200_OK)
+        response = requests.get('https://api.sampleapis.com/coffee/hot')
+        cafe = loads(dumps(COLLECTION.find_one({"_id": id})))
+        menu = cafe["menu"]
+        ingredients = {}
+        for ing_list in response.json():
+            if ing_list["title"] in menu.keys():
+                ingredients[ing_list["title"]] = ing_list["ingredients"]
+        cafe["ingredients"] = ingredients
+        return Response(cafe, status=status.HTTP_200_OK)
