@@ -38,10 +38,10 @@ export default function Comment({ comment }: { comment: CommentType }) {
             }}
             variant="body2"
           >
-            b/Columbia_Rockers
+            b/{comment.user_name}
           </Typography>
           <Typography sx={{ ml: 1, mr: 1 }}> • </Typography>
-          <Rating value={comment.rating} size="small" />
+          <Rating value={comment.rating} readOnly size="small" />
           <Typography sx={{ ml: 1, mr: 1 }}> • </Typography>
           <Typography sx={{ color: "#999999" }} variant="body2">
             2 hours ago

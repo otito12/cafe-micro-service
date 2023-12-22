@@ -15,6 +15,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useTheme } from "@mui/material";
+// import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
 
 function Login() {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -57,7 +58,7 @@ function Login() {
         justifyContent="flex-start"
         sx={{
           height: "100vh",
-          background: "#F1F1F1",
+          background: "#2196f310",
         }}
       >
         <Grid
@@ -82,6 +83,10 @@ function Login() {
                 justifyContent="stretch"
                 alignContent="stretch"
               >
+                {/* <EmojiFoodBeverageIcon
+                  color={"primary"}
+                  sx={{ fontSize: "30px" }}
+                /> */}
                 <Typography
                   variant="h6"
                   align="center"

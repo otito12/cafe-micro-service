@@ -1,46 +1,55 @@
 "use client";
-import EdgeContainer from "@/app/components/EdgeContainer";
+import EdgeContainer from "@/app/(dash)/components/EdgeContainer";
 import Grid from "@mui/material/Grid";
-import React, { useState } from "react";
-import Image from "next/image";
-import cafe from "@/public/cafe.jpg";
+import React, { useEffect, useState } from "react";
+import cafeimg from "@/public/cafe.jpg";
 import Typography from "@mui/material/Typography";
 import Rating from "@mui/material/Rating";
 import StarIcon from "@mui/icons-material/Star";
 import Button from "@mui/material/Button";
 import useTheme from "@mui/material/styles/useTheme";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
-import { Divider } from "@mui/material";
 import CafeMenu from "./components/CafeMenu";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { useRouter } from "next/navigation";
 import RichTextEditor from "./components/Thread/RichTextEditor";
 import { CommentType } from "@/typings";
+import { getSession } from "next-auth/react";
 import Comment from "./components/Thread/Comment";
+import Loading from "@/app/(dash)/components/Loading";
 
 export default function page({ params }: { params: { id: string } }) {
+  const [userSession, setUserSession] = useState<any>();
   const theme = useTheme();
   const router = useRouter();
   const [reviewText, setReviewText] = useState("");
   const [rating, setRating] = useState(0);
-  const [allComments, setAllComments] = useState([
-    {
-      comment_id: "1",
-      body: "the lorem ipsum game strong",
-      user_id: "12345",
-      user_name: "TonyTony_Choppa",
-      post_date: "11/25/2023",
-      rating: 2,
-    },
-    {
-      comment_id: "1",
-      body: "the lorem ipsum game strong",
-      user_id: "12345",
-      user_name: "TonyTony_Choppa",
-      post_date: "11/25/2023",
-      rating: 3,
-    },
-  ]);
+  const [allComments, setAllComments] = useState<Array<CommentType>>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [cafe, setCafe] = useState<any>();
+  async function getCafe() {
+    const session = await getSession();
+    console.log("SESSION", session);
+    setUserSession(session);
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL + `cafe/?id=${params.id}`}`, {
+      method: "GET",
+    })
+      .then((response) => response.json())
+      .then((cafes) => {
+        setCafe(cafes);
+        console.log(cafes);
+        setIsLoading(false);
+        setAllComments(cafes.reviews);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  useEffect(() => {
+    getCafe();
+  }, []);
 
   const addComment = () => {
     const newComment: CommentType = {
@@ -54,6 +63,10 @@ export default function page({ params }: { params: { id: string } }) {
     setAllComments((prev) => [newComment, ...prev]);
   };
 
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
     <Grid container alignContent={"start"}>
       <Grid container>
@@ -63,14 +76,14 @@ export default function page({ params }: { params: { id: string } }) {
             position: "relative",
           }}
         >
-          <Image
-            src={cafe}
+          <img
+            src={cafe ? cafe.img : cafeimg}
             style={{
               height: "300px",
               width: "100%",
               objectFit: "cover",
             }}
-            alt="none"
+            alt="loading"
           />
           <Grid
             container
@@ -99,12 +112,12 @@ export default function page({ params }: { params: { id: string } }) {
             </EdgeContainer>
             <EdgeContainer>
               <Grid container>
-                <Typography variant="h3">Cafe Name</Typography>
+                <Typography variant="h3">{cafe.name}</Typography>
               </Grid>
               <Grid container alignItems={"center"}>
                 <Rating
                   sx={{ mr: 2 }}
-                  defaultValue={2}
+                  value={cafe.avrg_rating}
                   size="large"
                   readOnly
                   emptyIcon={
@@ -114,7 +127,9 @@ export default function page({ params }: { params: { id: string } }) {
                     />
                   }
                 />
-                <Typography>2.7 (150 reviews)</Typography>
+                <Typography>
+                  {cafe.avrg_rating} ({cafe.reviews.length} reviews)
+                </Typography>
               </Grid>
             </EdgeContainer>
           </Grid>
@@ -130,7 +145,7 @@ export default function page({ params }: { params: { id: string } }) {
           </Grid>
 
           <Grid container mb={4}>
-            <CafeMenu />
+            <CafeMenu menu={cafe.menu} />
           </Grid>
 
           <Grid item xs={12} mb={4}>
@@ -142,28 +157,71 @@ export default function page({ params }: { params: { id: string } }) {
               Reviews
             </Typography>
           </Grid>
-
-          <Grid container mb={4}>
-            <Rating
-              sx={{ mb: 2 }}
-              value={rating}
-              onChange={(event, newValue) => {
-                setRating(newValue ? newValue : 0);
-              }}
-              size="medium"
-            />
-            <RichTextEditor
-              reviewText={reviewText}
-              setReviewText={setReviewText}
-            />
+          {userSession ? (
+            <Grid container mb={4}>
+              <Rating
+                sx={{ mb: 2 }}
+                value={rating}
+                onChange={(event, newValue) => {
+                  setRating(newValue ? newValue : 0);
+                }}
+                size="medium"
+              />
+              <RichTextEditor
+                reviewText={reviewText}
+                setReviewText={setReviewText}
+              />
+              <Grid
+                container
+                justifyContent={"end"}
+                sx={{
+                  mt: 2,
+                  ".MuiButton-root": {
+                    textTransform: "none",
+                    pl: 2,
+                    pr: 2,
+                    borderRadius: "5px",
+                    ".MuiTypography-root": {
+                      fontSize: "12px",
+                    },
+                  },
+                }}
+              >
+                <Button
+                  disableRipple
+                  onClick={() => {
+                    addComment();
+                    setReviewText("");
+                    setRating(0);
+                  }}
+                  sx={{
+                    ml: 2,
+                    background: theme.palette.primary.main,
+                    color: "white",
+                    ":hover": {
+                      background: theme.palette.primary.dark,
+                    },
+                  }}
+                >
+                  <Grid container alignItems={"center"}>
+                    <StarBorderIcon />
+                    <Typography sx={{ p: 0.5, pl: 1, pr: 1 }}>
+                      Write a review
+                    </Typography>
+                  </Grid>
+                </Button>
+              </Grid>
+            </Grid>
+          ) : (
             <Grid
               container
-              justifyContent={"end"}
+              justifyContent={"start"}
               sx={{
                 mt: 2,
+                mb: 4,
                 ".MuiButton-root": {
                   textTransform: "none",
-                  pl: 2,
+                  // pl: 2,
                   pr: 2,
                   borderRadius: "5px",
                   ".MuiTypography-root": {
@@ -175,12 +233,9 @@ export default function page({ params }: { params: { id: string } }) {
               <Button
                 disableRipple
                 onClick={() => {
-                  addComment();
-                  setReviewText("");
-                  setRating(0);
+                  router.push("/login");
                 }}
                 sx={{
-                  ml: 2,
                   background: theme.palette.primary.main,
                   color: "white",
                   ":hover": {
@@ -196,7 +251,7 @@ export default function page({ params }: { params: { id: string } }) {
                 </Grid>
               </Button>
             </Grid>
-          </Grid>
+          )}
 
           <Grid container mb={4}>
             <Grid container>

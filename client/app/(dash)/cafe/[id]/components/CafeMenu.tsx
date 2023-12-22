@@ -2,14 +2,14 @@ import { Divider, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import React from "react";
 
-export default function CafeMenu() {
+export default function CafeMenu({ menu }: { menu: any }) {
   const menuItems = [{}, {}, {}];
   return (
     <Grid
       container
       sx={{ border: "1px solid #00000020", p: 3, borderRadius: "5px" }}
     >
-      {menuItems.map((item, index) => (
+      {Object.keys(menu).map((key: string, index) => (
         <Grid
           container
           key={index}
@@ -17,7 +17,7 @@ export default function CafeMenu() {
           alignItems={"center"}
         >
           <Grid item>
-            <Typography> Apple</Typography>
+            <Typography>{key}</Typography>
           </Grid>
           <Grid item flex={1} pl={2} pr={2}>
             <Divider
@@ -29,7 +29,7 @@ export default function CafeMenu() {
             />
           </Grid>
           <Grid item>
-            <Typography>$ {2.0}</Typography>
+            <Typography>$ {menu[key]}</Typography>
           </Grid>
         </Grid>
       ))}

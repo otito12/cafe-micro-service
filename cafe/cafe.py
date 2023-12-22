@@ -15,7 +15,7 @@ COLLECTION = db_client[db_name][COLLECTION_KEY]
 def handle_get(request):
     id = request.GET.get('id', None)
     if not id:
-        return Response(loads(dumps(COLLECTION.find_one())), status=status.HTTP_200_OK)
+        return Response(loads(dumps(COLLECTION.find())), status=status.HTTP_200_OK)
     else:
         return Response(loads(dumps(COLLECTION.find_one({"_id": id}))), status=status.HTTP_200_OK)
 

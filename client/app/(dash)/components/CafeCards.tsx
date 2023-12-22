@@ -8,13 +8,13 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export default function CafeCard() {
+export default function CafeCard({ cafe }: { cafe: any }) {
   const router = useRouter();
   return (
     <Grid
       container
       columnSpacing={2}
-      onClick={() => router.push("/cafe/5432")}
+      onClick={() => router.push(`/cafe/${cafe._id}`)}
       p={2}
       pt={3}
       pb={3}
@@ -41,9 +41,7 @@ export default function CafeCard() {
           }}
         >
           <img
-            src={
-              "https://media.gq-magazine.co.uk/photos/62c55e7b564b55738c336214/16:9/w_2240,c_limit/StrangerThings_StrangerThings4_8_00_48_09_23_R.jpg"
-            }
+            src={cafe.img}
             className="incentive_image"
             style={{
               width: "250px",
@@ -58,9 +56,9 @@ export default function CafeCard() {
       <Grid item flex={1}>
         <Grid container alignContent={"space-between"} height={"100%"}>
           <Grid container>
-            <Typography variant="h6">Cafe name</Typography>
+            <Typography variant="h6">{cafe.name}</Typography>
             <Grid container>
-              <Rating defaultValue={2} size="medium" readOnly />
+              <Rating value={cafe.avrg_rating} size="medium" readOnly />
             </Grid>
             <Grid container>
               <Grid item mr={1} pt={0.5}>
@@ -69,11 +67,7 @@ export default function CafeCard() {
               <Grid item flex={1}>
                 <Typography variant="body2" color={"#00000080"}>
                   {" "}
-                  "
-                  {
-                    "So after reading reviews for this place, I was skeptical. I had actually even postponed coming here. However, it isn't fair to judge something based solely on others opinions so I had to try it. I'm glad I did."
-                  }
-                  "
+                  "{cafe.reviews[0]?.body}"
                   <Button
                     sx={{
                       p: 0,
