@@ -51,7 +51,7 @@ export default function page({ params }: { params: { id: string } }) {
   useEffect(() => {
     getCafe();
   }, []);
-
+  // prod deploy
   const addComment = () => {
     const now = new Date();
     const newComment: CommentType = {
