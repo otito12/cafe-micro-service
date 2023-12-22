@@ -1,1 +1,1 @@
-web gunicorn cuoserver.wsgi:application --log-file -
+web gunicorn cafemicroservice.wsgi:application --log-file -
