@@ -309,7 +309,11 @@ export default function page({ params }: { params: { id: string } }) {
                 <Comment
                   key={index}
                   comment={comment}
-                  editable={userSession.user.email === comment.user_id}
+                  editable={
+                    userSession
+                      ? userSession.user.email === comment.user_id
+                      : false
+                  }
                   deleteComment={deleteComment}
                 />
               ))}
